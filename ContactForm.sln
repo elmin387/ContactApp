@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContactApp.Application", "C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContactApp.Infrastructure", "ContactApp.Infrastructure\ContactApp.Infrastructure.csproj", "{93CFA00A-9969-4CCB-BC07-26D79A0E35C8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{26C22D74-8D46-41B5-9258-3A48C06FA869}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5AC90040-9A93-423F-9759-87C72A6E7569}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore

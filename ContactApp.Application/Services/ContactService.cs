@@ -11,22 +11,25 @@ namespace ContactApp.Application.Services
         private readonly IApiService _apiService;
         private readonly IEmailService _emailService;
         private readonly IRateLimitingService _rateLimitingService;
+        private readonly ILoggerService _logger;
 
         public ContactService(IContactRepository contactRepository,
             IApiService apiService,
             IEmailService emailService,
-            IRateLimitingService rateLimitingService)
+            IRateLimitingService rateLimitingService, ILoggerService loggerService)
         {
             _contactRepository = contactRepository;
             _apiService = apiService;
             _emailService = emailService;
             _rateLimitingService = rateLimitingService;
+            _logger = loggerService;
         }
 
         public async Task<(bool Success, string Message)> ProcessContactSubmissionAsync(ContactDto contactDto, string ipAddress)
         {
             try
             {
+                _logger.LogInformation("Start processing contact for email: {@Email}, IP: {@IPAddress}}", contactDto.Email,ipAddress);
                 bool canSubmit = await _rateLimitingService.CanSubmitAsync(ipAddress);
                 if (!canSubmit)
                 {

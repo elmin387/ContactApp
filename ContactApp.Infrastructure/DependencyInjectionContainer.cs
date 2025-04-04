@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using ContactApp.Infrastructure.Logger;
 
 namespace ContactApp.Infrastructure
 {
@@ -34,8 +35,9 @@ namespace ContactApp.Infrastructure
             
             services.AddScoped<IApiService, ApiService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddSingleton<ILoggerService, SerilogLoggerService>();
 
-            
+
             services.AddHttpClient();
 
             return services;
