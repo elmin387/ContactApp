@@ -33,6 +33,7 @@ namespace ContactApp.Application.Services
                 bool canSubmit = await _rateLimitingService.CanSubmitAsync(ipAddress);
                 if (!canSubmit)
                 {
+                    _logger.LogWarning("To much request in short time from ipAddress: {IPAddress}", ipAddress);
                     return (false, "Please wait at least one minute between submissions.");
                 }
                 var contact = new Contact
@@ -42,29 +43,40 @@ namespace ContactApp.Application.Services
                     Email = contactDto.Email,
                     IPAddress = ipAddress
                 };
+                _logger.LogDebug("Creating contact in db: {Name} {LastName}, {Email}", contactDto.Name, contactDto.LastName, contactDto.Email);
                 int contactId = await _contactRepository.CreateContactAsync(contact);
+                _logger.LogInformation("Contact created successfully with ID: {ContactId}", contactId);
                 var additionalInfo = await _apiService.GetAdditionalUserInfoAsync(contactDto.Email);
                 if (additionalInfo != null)
                 {
-              
+
+                    _logger.LogInformation("Retrieved additional information: {ContactId}", contactId);
                     var contactDetails = MapToContactDetails(contactId, additionalInfo);
 
                    
                     await _contactRepository.AddContactDetailsAsync(contactId, contactDetails);
+                    _logger.LogInformation("Saved additional contact details to db for contact: {ContactId}", contactId);
 
                 }
+                else
+                {
+                    _logger.LogWarning("There is no additional contact details for email: {Email}", contactDto.Email);
+                }
                 await _emailService.SendEmailAsync(contactDto.Email, contactDto.Name, additionalInfo);
+                _logger.LogInformation("Email sent for contact: {ContactId}", contactId);
                 return (true, "Contact information successfully submitted!");
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Contact processing error for email: {Email}", contactDto.Email);
                 return (false, "An error occurred while processing your submission. Please try again later.");
             }   
         }
 
             private ContactDetails MapToContactDetails(int contactId, ContactDetailDto dto)
             {
-                return new ContactDetails
+              _logger.LogDebug("Mapping additional details for contact: {ContactId}", contactId);
+            return new ContactDetails
                 {
                     ContactDetailsId = contactId,
                     UserName = dto.UserName,

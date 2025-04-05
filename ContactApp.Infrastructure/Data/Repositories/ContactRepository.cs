@@ -1,4 +1,5 @@
 ﻿using ContactApp.Application.Interfaces.Repositories;
+using ContactApp.Application.Interfaces.Services;
 using ContactApp.Domain.Entities;
 using ContactApp.Infrastructure.Data.Queries;
 using Dapper;
@@ -8,12 +9,17 @@ namespace ContactApp.Infrastructure.Data.Repositories
     public class ContactRepository : IContactRepository
     {
         private readonly IConnectionFactory _connectionFactory;
-        public ContactRepository(IConnectionFactory connectionFactory)
+        private readonly ILoggerService _logger;
+
+        public ContactRepository(IConnectionFactory connectionFactory, ILoggerService logger)
         {
             _connectionFactory = connectionFactory;
+            _logger = logger;
         }
         public async Task<int> CreateContactAsync(Contact contact)
         {
+            _logger.LogDebug("Creating contact in db: {Name} {LastName}, {Email}",
+                contact.Name, contact.LastName, contact.Email);
             using var connection = _connectionFactory.CreateConnection();
             return await connection.QuerySingleAsync<int>(ContactQueries.InsertContact, new
             {
@@ -26,6 +32,7 @@ namespace ContactApp.Infrastructure.Data.Repositories
         }
         public async Task<DateTime> GetLastSubmissionTimeAsync(string ipAddress)
         {
+            _logger.LogDebug("Retrieving last submission time for IP: {IPAddress}", ipAddress);
             using var connection = _connectionFactory.CreateConnection();
             var result = await connection.QuerySingleOrDefaultAsync<DateTime?>(
                 ContactQueries.GetLastSubmissionTime,
@@ -36,6 +43,7 @@ namespace ContactApp.Infrastructure.Data.Repositories
 
         public async Task AddContactDetailsAsync(int contactId, ContactDetails contactDetails)
         {
+            _logger.LogDebug("Adding additional details for contact ID: {ContactId}", contactId);
             using var connection = _connectionFactory.CreateConnection();
             using var transaction = connection.BeginTransaction();
 
@@ -115,9 +123,11 @@ namespace ContactApp.Infrastructure.Data.Repositories
                 }
 
                 transaction.Commit();
+                _logger.LogInformation("Successfully added all details for contact: {ContactId}", contactId);
             }
-            catch
+            catch(Exception ex) 
             {
+                _logger.LogError(ex, "There is an error in adding additional details: {ContactId}", contactId);
                 transaction.Rollback();
                 throw;
             }

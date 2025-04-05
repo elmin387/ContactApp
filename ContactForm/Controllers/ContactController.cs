@@ -8,9 +8,11 @@ namespace ContactApp.Web.Controllers
     public class ContactController : Controller
     {
         private IContactService _contactService;
-        public ContactController(IContactService contactService)
+        private readonly ILoggerService _logger;
+        public ContactController(IContactService contactService, ILoggerService loggerService)
         {
-            _contactService = contactService;   
+            _contactService = contactService;
+            _logger = loggerService;
         }
 
         [HttpGet]
@@ -27,11 +29,14 @@ namespace ContactApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(ContactViewModel model)
         {
+            _logger.LogInformation("Received request for creating contact");
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
             string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1";
+            _logger.LogInformation("Processing details for: {Name} {LastName}, Email: {Email}, IP: {IPAddress}",
+            model.Name, model.LastName, model.Email, ipAddress);
             var contactDto = new ContactDto
             {
                 Name = model.Name,
