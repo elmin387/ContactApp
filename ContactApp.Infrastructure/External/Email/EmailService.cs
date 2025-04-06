@@ -20,7 +20,7 @@ namespace ContactApp.Infrastructure.External.Email
         {
             _emailSettings = emailSettings.Value;
         }
-        public async Task SendEmailAsync(string email, string name, ContactDetailDto contactDetails)
+        public async Task SendEmailAsync(string email, string name, ContactDetailDto? contactDetails)
         {
             var mail = new MailMessage
             {
@@ -39,7 +39,7 @@ namespace ContactApp.Infrastructure.External.Email
 
             await client.SendMailAsync(mail);
         }
-        private string BuildEmailBody(string name, ContactDetailDto contactDetails)
+        private string BuildEmailBody(string name, ContactDetailDto? contactDetails)
         {
             var builder = new StringBuilder();
 

@@ -8,8 +8,8 @@ namespace ContactApp.Infrastructure.Configuration
 {
     public class ApiSettings
     {
-        public string BaseUrl { get; set; }
-        public string UserEndpoint { get; set; }
+        public required string BaseUrl { get; set; }
+        public required string UserEndpoint { get; set; }
         public int TimeoutSeconds { get; set; } = 30;
     }
 }

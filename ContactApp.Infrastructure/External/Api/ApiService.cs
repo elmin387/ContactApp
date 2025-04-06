@@ -23,7 +23,7 @@ namespace ContactApp.Infrastructure.External.Api
             _apiSettings = apiSettings.Value;
             _logger = loggerService;
         }
-        public async Task<ContactDetailDto> GetAdditionalUserInfoAsync(string email)
+        public async Task<ContactDetailDto?> GetAdditionalUserInfoAsync(string email)
         {
             try
             {
@@ -46,14 +46,14 @@ namespace ContactApp.Infrastructure.External.Api
                 {
                     PropertyNameCaseInsensitive = true
                 });
-                if (users == null || !users.Any())
+                if (users == null || users.Count == 0)
                 {
                     _logger.LogWarning("API does not return the contact details for email: {Email}", email);
                     return null;
                 }
                  var user = users[0];
                 _logger.LogInformation("Retrieved additional informations for the user: {UserName}, Email: {Email}",
-                    user.UserName, email);
+                    string.IsNullOrWhiteSpace(user.UserName) ? "Unknown" : user.UserName, email);
                 return user;
 
             }

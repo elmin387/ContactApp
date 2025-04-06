@@ -151,7 +151,7 @@ namespace ContactApp.Tests.Unit.Application_layer_tests
 
             _mockApiService
                 .Setup(x => x.GetAdditionalUserInfoAsync(contactDto.Email))
-                .ReturnsAsync((ContactDetailDto)null);
+                .ReturnsAsync((ContactDetailDto?)null);
 
             var result = await _contactService.ProcessContactSubmissionAsync(contactDto, ipAddress);
 
