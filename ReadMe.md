@@ -7,6 +7,13 @@ A simple ASP.NET Core web application with a clean architecture that includes:
 - External API integration for pulling user details
 - Rate limiting to prevent spam submissions
 
+## Architecture
+The application follows Clean Architecture principles with separate projects for each layer:
+- ContactApp.Web: Presentation layer with Razor Pages
+- ContactApp.Application: Business logic and use cases
+- ContactApp.Domain: Core entities and business rules
+- ContactApp.Infrastructure: External services implementation (email, API, database)
+
 ## Fetaures
 - Razor Pages frontend
 - Clean architecture (separated projects per layer)
@@ -62,4 +69,16 @@ The application uses Serilog for structured logging:
 Console output for development
 Daily rolling log files stored in the Logs directory
 Configurable log levels via appsettings.json
+
+## Testing
+The application includes unit tests for the application service layer, implemented using xUnit testing framework.
+### Running Tests
+To run the unit tests:
+1. Run: `dotnet test`
+Test Coverage
+The unit tests cover the following areas of the application service layer:
+- Contact form submission validation
+- Rate limiting functionality
+- API integration service
+- Email notification service
 
