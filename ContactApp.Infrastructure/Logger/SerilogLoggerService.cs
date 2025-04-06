@@ -1,6 +1,5 @@
 ﻿using ContactApp.Application.Interfaces.Services;
 using Serilog;
-using System;
 
 namespace ContactApp.Infrastructure.Logger
 {

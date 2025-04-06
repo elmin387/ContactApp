@@ -5,11 +5,6 @@ using ContactApp.Application.Services;
 using ContactApp.Domain.Entities;
 using FluentAssertions;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ContactApp.Tests.Unit.Application_layer_tests
 {
@@ -108,14 +103,11 @@ namespace ContactApp.Tests.Unit.Application_layer_tests
                 .Setup(x => x.GetAdditionalUserInfoAsync(contactDto.Email))
                 .ReturnsAsync(additionalInfo);
 
-            // Act
             var result = await _contactService.ProcessContactSubmissionAsync(contactDto, ipAddress);
 
-            // Assert
             result.Success.Should().BeTrue();
             result.Message.Should().Contain("successfully");
 
-            // Verify contact was created
             _mockContactRepository.Verify(x => x.CreateContactAsync(
                 It.Is<Contact>(c =>
                     c.Name == contactDto.Name &&
@@ -125,13 +117,11 @@ namespace ContactApp.Tests.Unit.Application_layer_tests
                 )),
                 Times.Once);
 
-            // Verify contact details were added
             _mockContactRepository.Verify(x => x.AddContactDetailsAsync(
                 It.Is<int>(id => id == contactId),
                 It.IsAny<ContactDetails>()
             ), Times.Once);
 
-            // Verify email was sent
             _mockEmailService.Verify(x => x.SendEmailAsync(
                 contactDto.Email,
                 contactDto.Name,
@@ -142,7 +132,6 @@ namespace ContactApp.Tests.Unit.Application_layer_tests
         [Fact]
         public async Task ProcessContactSubmissionAsync_WhenNoAdditionalInfo_ShouldStillSucceed()
         {
-            // Arrange
             var contactDto = new ContactDto
             {
                 Name = "Damir",
@@ -164,22 +153,17 @@ namespace ContactApp.Tests.Unit.Application_layer_tests
                 .Setup(x => x.GetAdditionalUserInfoAsync(contactDto.Email))
                 .ReturnsAsync((ContactDetailDto)null);
 
-            // Act
             var result = await _contactService.ProcessContactSubmissionAsync(contactDto, ipAddress);
 
-            // Assert
             result.Success.Should().BeTrue();
 
-            // Verify contact was created
             _mockContactRepository.Verify(x => x.CreateContactAsync(It.IsAny<Contact>()), Times.Once);
 
-            // Verify contact details were NOT added
             _mockContactRepository.Verify(x => x.AddContactDetailsAsync(
                 It.IsAny<int>(),
                 It.IsAny<ContactDetails>()
             ), Times.Never);
 
-            // Verify email was still sent
             _mockEmailService.Verify(x => x.SendEmailAsync(
                 contactDto.Email,
                 contactDto.Name,
@@ -190,7 +174,6 @@ namespace ContactApp.Tests.Unit.Application_layer_tests
         [Fact]
         public async Task ProcessContactSubmissionAsync_WhenExceptionOccurs_ShouldReturnFailure()
         {
-            // Arrange
             var contactDto = new ContactDto
             {
                 Name = "Damir",
@@ -207,10 +190,8 @@ namespace ContactApp.Tests.Unit.Application_layer_tests
                 .Setup(x => x.CreateContactAsync(It.IsAny<Contact>()))
                 .ThrowsAsync(new System.Exception("Database error"));
 
-            // Act
             var result = await _contactService.ProcessContactSubmissionAsync(contactDto, ipAddress);
 
-            // Assert
             result.Success.Should().BeFalse();
             result.Message.Should().Contain("error occurred");
         }
