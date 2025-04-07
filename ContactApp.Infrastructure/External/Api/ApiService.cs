@@ -2,12 +2,7 @@
 using ContactApp.Application.Interfaces.Services;
 using ContactApp.Infrastructure.Configuration;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace ContactApp.Infrastructure.External.Api
 {
